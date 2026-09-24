@@ -1,14 +1,15 @@
 import os
 import json
 import time
+import threading
 import urllib.request
 import urllib.parse
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# Токен будет добавлен на сервере Render.
 TOKEN = os.getenv("BOT_TOKEN")
 
 if not TOKEN:
-    print("❌ Ошибка: переменная BOT_TOKEN не задана")
+    print("❌ Ошибка: BOT_TOKEN не задан")
     raise SystemExit
 
 API = f"https://api.telegram.org/bot{TOKEN}"
@@ -34,9 +35,12 @@ def send_message(chat_id, text, keyboard=None):
     }
 
     if keyboard:
-        data["reply_markup"] = json.dumps(keyboard, ensure_ascii=False)
+        data["reply_markup"] = json.dumps(
+            keyboard,
+            ensure_ascii=False
+        )
 
-    return telegram("sendMessage", data)
+    telegram("sendMessage", data)
 
 
 def main_menu():
@@ -107,8 +111,7 @@ def handle_message(message):
         send_message(
             chat_id,
             "🏢 Создание бизнеса\n\n"
-            "На следующем этапе здесь появится "
-            "пошаговая регистрация бизнеса."
+            "Здесь будет пошаговая регистрация бизнеса."
         )
 
     elif text == "📋 Данные бизнеса":
@@ -124,7 +127,7 @@ def handle_message(message):
         send_message(
             chat_id,
             "📞 Контакты\n\n"
-            "Контактные данные бизнеса пока не заполнены."
+            "Контактные данные пока не заполнены."
         )
 
     elif text == "🚚 Доставка":
@@ -139,8 +142,7 @@ def handle_message(message):
             chat_id,
             "🛍 Каталог\n\n"
             "Ваш каталог пока пуст.\n\n"
-            "Используйте «➕ Добавить товар», "
-            "чтобы добавить первый товар."
+            "Используйте «➕ Добавить товар»."
         )
 
     elif text == "📦 Заказы":
@@ -154,12 +156,7 @@ def handle_message(message):
         send_message(
             chat_id,
             "➕ Добавление товара\n\n"
-            "На следующем этапе сделаем форму:\n"
-            "1️⃣ Название товара\n"
-            "2️⃣ Цена\n"
-            "3️⃣ Описание\n"
-            "4️⃣ Фото\n"
-            "5️⃣ Сохранение товара"
+            "Здесь сделаем форму добавления товара."
         )
 
     elif text == "📊 Статистика":
@@ -182,8 +179,7 @@ def handle_message(message):
         send_message(
             chat_id,
             "🔔 Уведомления\n\n"
-            "Настройки уведомлений пока находятся "
-            "в разработке."
+            "Настройки уведомлений пока в разработке."
         )
 
     elif text == "🌐 Язык":
@@ -211,18 +207,44 @@ def handle_message(message):
         )
 
 
-def main():
-    print("================================")
-    print("🚀 BusinessShopBot запускается")
-    print("================================")
+class HealthHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        if self.path == "/healthz":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"OK")
+        else:
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"BusinessShopBot is running")
+
+    def log_message(self, format, *args):
+        return
+
+
+def start_server():
+    port = int(os.environ.get("PORT", 10000))
+
+    server = HTTPServer(
+        ("0.0.0.0", port),
+        HealthHandler
+    )
+
+    print(f"🌐 HTTP сервер запущен на порту {port}")
+    server.serve_forever()
+
+
+def bot_loop():
+    print("🤖 Telegram бот запускается...")
 
     bot = telegram("getMe")["result"]
 
     print("✅ Telegram подключён!")
     print(f"🤖 Бот: {bot.get('first_name')}")
     print(f"👤 Username: @{bot.get('username')}")
-    print("⏳ Бот работает постоянно...")
-    print("================================")
+    print("⏳ Бот работает...")
 
     offset = 0
 
@@ -236,9 +258,7 @@ def main():
                 }
             )
 
-            updates = result.get("result", [])
-
-            for update in updates:
+            for update in result.get("result", []):
                 offset = update["update_id"] + 1
 
                 message = update.get("message")
@@ -252,4 +272,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+
+    print("================================")
+    print("🚀 BusinessShopBot запускается")
+    print("================================")
+
+    threading.Thread(
+        target=start_server,
+        daemon=True
+    ).start()
+
+    bot_loop()
