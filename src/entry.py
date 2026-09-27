@@ -407,6 +407,15 @@ class Default(WorkerEntrypoint):
         # ==========================================
         # /START
         # ==========================================
+        if text == "/myid":
+
+    await self.send_message(
+        chat_id,
+        f"🆔 Ваш Telegram ID:\n\n{chat_id}",
+        keyboard
+    )
+
+    return Response("OK")
         if text == "/start":
             await self.send_message(
                 chat_id,
