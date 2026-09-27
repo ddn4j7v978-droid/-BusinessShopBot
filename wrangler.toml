@@ -3,3 +3,8 @@ main = "src/entry.py"
 
 compatibility_date = "2026-09-25"
 compatibility_flags = ["python_workers"]
+
+[assets]
+directory = "./miniapp"
+binding = "ASSETS"
+run_worker_first = true
