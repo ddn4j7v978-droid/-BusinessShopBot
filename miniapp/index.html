@@ -2,10 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Business Market</title>
 
+    <!-- Telegram Mini App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
@@ -20,33 +22,51 @@
             color: #111;
         }
 
+        button,
+        input {
+            font-family: inherit;
+        }
+
         .app {
             max-width: 600px;
             margin: auto;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
+        /* HEADER */
+
         header {
-            padding: 18px 16px 10px;
+            padding: 20px 16px 10px;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 25px;
             font-weight: 800;
         }
 
         .subtitle {
             color: #777;
-            margin-top: 4px;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            margin: 10px 16px 18px;
         }
 
         .search {
-            margin: 10px 16px;
+            width: 100%;
+            border: none;
+            outline: none;
             background: white;
             border-radius: 14px;
-            padding: 13px 16px;
-            color: #888;
+            padding: 14px 16px;
+            font-size: 15px;
         }
+
+        /* SECTIONS */
 
         .section {
             padding: 10px 16px;
@@ -57,6 +77,8 @@
             font-weight: 700;
             margin-bottom: 12px;
         }
+
+        /* CATEGORIES */
 
         .categories {
             display: grid;
@@ -70,6 +92,11 @@
             padding: 12px 5px;
             text-align: center;
             font-size: 13px;
+            cursor: pointer;
+        }
+
+        .category:active {
+            transform: scale(0.97);
         }
 
         .category-icon {
@@ -77,6 +104,8 @@
             display: block;
             margin-bottom: 5px;
         }
+
+        /* PRODUCTS */
 
         .products {
             display: grid;
@@ -88,6 +117,11 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
+            cursor: pointer;
+        }
+
+        .product:active {
+            transform: scale(0.98);
         }
 
         .product-image {
@@ -119,6 +153,8 @@
             margin-top: 4px;
         }
 
+        /* BOTTOM NAVIGATION */
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -128,19 +164,41 @@
             border-top: 1px solid #ddd;
             display: flex;
             justify-content: space-around;
-            padding: 10px 5px;
+            padding: 9px 5px;
+            z-index: 100;
         }
 
         .nav-item {
             text-align: center;
             font-size: 12px;
             color: #777;
+            cursor: pointer;
+            min-width: 60px;
         }
 
         .nav-icon {
             display: block;
             font-size: 22px;
             margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #111;
+            font-weight: 600;
+        }
+
+        /* TELEGRAM USER */
+
+        .user-block {
+            margin: 5px 16px 15px;
+            background: white;
+            border-radius: 14px;
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -149,15 +207,36 @@
 
 <div class="app">
 
+    <!-- HEADER -->
     <header>
-        <div class="logo">🛍 Business Market</div>
-        <div class="subtitle">Маркетплейс внутри Telegram</div>
+        <div class="logo">
+            🛍 Business Market
+        </div>
+
+        <div class="subtitle">
+            Маркетплейс внутри Telegram
+        </div>
     </header>
 
-    <div class="search">
-        🔎 Найти товары
+
+    <!-- USER -->
+    <div id="userBlock" class="user-block hidden">
+        👤 <span id="userName"></span>
     </div>
 
+
+    <!-- SEARCH -->
+    <div class="search-box">
+        <input
+            id="searchInput"
+            class="search"
+            type="text"
+            placeholder="🔎 Найти товары"
+        >
+    </div>
+
+
+    <!-- CATEGORIES -->
     <div class="section">
 
         <div class="section-title">
@@ -166,50 +245,51 @@
 
         <div class="categories">
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Одежда')">
                 <span class="category-icon">👕</span>
                 Одежда
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Электроника')">
                 <span class="category-icon">📱</span>
                 Электроника
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Дом')">
                 <span class="category-icon">🏠</span>
                 Дом
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Красота')">
                 <span class="category-icon">💄</span>
                 Красота
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Еда')">
                 <span class="category-icon">🍔</span>
                 Еда
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Подарки')">
                 <span class="category-icon">🎁</span>
                 Подарки
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Авто')">
                 <span class="category-icon">🚗</span>
                 Авто
             </div>
 
-            <div class="category">
+            <div class="category" onclick="selectCategory('Другое')">
                 <span class="category-icon">📦</span>
                 Другое
             </div>
 
         </div>
-
     </div>
 
+
+    <!-- POPULAR PRODUCTS -->
     <div class="section">
 
         <div class="section-title">
@@ -218,10 +298,14 @@
 
         <div class="products">
 
-            <div class="product">
-                <div class="product-image">👟</div>
+            <div class="product" onclick="openProduct('Кроссовки')">
+
+                <div class="product-image">
+                    👟
+                </div>
 
                 <div class="product-info">
+
                     <div class="product-name">
                         Кроссовки
                     </div>
@@ -233,13 +317,19 @@
                     <div class="rating">
                         ⭐ 4.8
                     </div>
+
                 </div>
             </div>
 
-            <div class="product">
-                <div class="product-image">📱</div>
+
+            <div class="product" onclick="openProduct('Смартфон')">
+
+                <div class="product-image">
+                    📱
+                </div>
 
                 <div class="product-info">
+
                     <div class="product-name">
                         Смартфон
                     </div>
@@ -251,13 +341,19 @@
                     <div class="rating">
                         ⭐ 4.7
                     </div>
+
                 </div>
             </div>
 
-            <div class="product">
-                <div class="product-image">🎧</div>
+
+            <div class="product" onclick="openProduct('Наушники')">
+
+                <div class="product-image">
+                    🎧
+                </div>
 
                 <div class="product-info">
+
                     <div class="product-name">
                         Наушники
                     </div>
@@ -269,13 +365,19 @@
                     <div class="rating">
                         ⭐ 4.9
                     </div>
+
                 </div>
             </div>
 
-            <div class="product">
-                <div class="product-image">⌚</div>
+
+            <div class="product" onclick="openProduct('Смарт-часы')">
+
+                <div class="product-image">
+                    ⌚
+                </div>
 
                 <div class="product-info">
+
                     <div class="product-name">
                         Смарт-часы
                     </div>
@@ -287,43 +389,196 @@
                     <div class="rating">
                         ⭐ 4.6
                     </div>
+
                 </div>
             </div>
 
         </div>
-
     </div>
 
 </div>
 
+
+<!-- BOTTOM NAVIGATION -->
+
 <div class="bottom-nav">
 
-    <div class="nav-item">
+    <div class="nav-item active" onclick="goHome()">
         <span class="nav-icon">🏠</span>
         Главная
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item" onclick="openCatalog()">
         <span class="nav-icon">📂</span>
         Каталог
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item" onclick="openCart()">
         <span class="nav-icon">🛒</span>
         Корзина
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item" onclick="openOrders()">
         <span class="nav-icon">📦</span>
         Заказы
     </div>
 
-    <div class="nav-item">
+    <div class="nav-item" onclick="openProfile()">
         <span class="nav-icon">👤</span>
         Профиль
     </div>
 
 </div>
+
+
+<script>
+
+    // Telegram Mini App
+
+    const tg = window.Telegram.WebApp;
+
+    tg.ready();
+
+    tg.expand();
+
+
+    // Показываем информацию о пользователе Telegram
+
+    const user = tg.initDataUnsafe?.user;
+
+    if (user) {
+
+        const userBlock = document.getElementById("userBlock");
+        const userName = document.getElementById("userName");
+
+        userBlock.classList.remove("hidden");
+
+        userName.textContent =
+            user.first_name || "Пользователь";
+    }
+
+
+    // Поиск
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("input", function () {
+
+        const query =
+            searchInput.value.toLowerCase().trim();
+
+        const products =
+            document.querySelectorAll(".product");
+
+        products.forEach(function(product) {
+
+            const name =
+                product
+                .querySelector(".product-name")
+                .textContent
+                .toLowerCase();
+
+            if (name.includes(query)) {
+
+                product.style.display = "";
+
+            } else {
+
+                product.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+
+    // Категория
+
+    function selectCategory(category) {
+
+        tg.HapticFeedback.impactOccurred("light");
+
+        tg.showAlert(
+            "Выбрана категория: " + category
+        );
+
+    }
+
+
+    // Открытие товара
+
+    function openProduct(productName) {
+
+        tg.HapticFeedback.impactOccurred("light");
+
+        tg.showAlert(
+            "Открываем товар: " + productName
+        );
+
+    }
+
+
+    // Навигация
+
+    function goHome() {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    function openCatalog() {
+
+        tg.showAlert(
+            "Каталог товаров"
+        );
+
+    }
+
+
+    function openCart() {
+
+        tg.showAlert(
+            "Корзина пока пустая"
+        );
+
+    }
+
+
+    function openOrders() {
+
+        tg.showAlert(
+            "У вас пока нет заказов"
+        );
+
+    }
+
+
+    function openProfile() {
+
+        if (user) {
+
+            tg.showAlert(
+                "Профиль: " +
+                (user.first_name || "Пользователь")
+            );
+
+        } else {
+
+            tg.showAlert(
+                "Профиль пользователя"
+            );
+
+        }
+
+    }
+
+</script>
 
 </body>
 </html>
